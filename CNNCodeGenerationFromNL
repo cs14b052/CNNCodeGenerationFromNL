@@ -1,0 +1,54 @@
+import sys
+from tensorflow import keras
+import numpy as np
+from cnn_template import cnn_model
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+
+options = ['SLayerS', 'SConvTypeS', 'SOptimizerS', 'SPoolingFnS', 'SActivationFnS']
+
+if __name__ == '__main__':
+	
+	# input_string = input('Enter the model specification in natural language: ')
+	model = keras.models.load_model('rnn_basic_all_dense_layer_2', compile=False)
+
+	sample_text = ("Generate a Convolutional Neural Network with {convolution_layer} type of layers. The count needs to be {layer_count}. Use {optimizer} for optimization and {pooling_function} as the pooling layer. Also use {activation_function} for activation."
+	.format(layer_count=4, convolution_layer='2D separable convolution', activation_function='gelu', optimizer='nadam', pooling_function='average pooling'))
+	print(sample_text)
+	# ("Generate a Convolutional Neural Network with {convolution_layer} type of layers. The count needs to be {layer_count}. Use {optimizer} for optimization and {pooling_function} as the pooling layer. Also use {activation_function} for activation."
+	# ("Generate CNN code for classification with layer count of {layer_count} and use {convolution_layer} layers. Use {activation_function} as activation function and {optimizer} optimizer. The pooling layer is {pooling_function}."
+	# Layer Count
+	input_string = sample_text + " " + options[0]
+	predictions = model.predict(np.array([input_string]))
+	layer_count = np.argmax(predictions[0]) + 1
+
+	# Convolution Layer
+	input_string = sample_text + " " + options[1]
+	predictions = model.predict(np.array([input_string]))
+	conv_layer = np.argmax(predictions[0]) - 10
+
+	# Activation Function
+	input_string = sample_text + " " + options[4]
+	predictions = model.predict(np.array([input_string]))
+	activation_fn = np.argmax(predictions[0]) - 23
+	# print(predictions[0])
+	# print(np.argmax(predictions[0]))
+
+	# Pooling Function
+	input_string = sample_text + " " + options[3]
+	predictions = model.predict(np.array([input_string]))
+	pooling_fn = np.argmax(predictions[0]) - 19
+
+	# Optimizer
+	input_string = sample_text + " " + options[2]
+	predictions = model.predict(np.array([input_string]))
+	optimizer = np.argmax(predictions[0]) - 35
+
+
+	# print(layer_count)
+	# print(conv_layer)
+	# print(activation_fn)
+	# print(pooling_fn)
+	# print(optimizer)
+
+	cnn_model(layer_count, conv_layer, pooling_fn, activation_fn, optimizer)
